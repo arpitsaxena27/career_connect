@@ -96,7 +96,7 @@ const ProfilePage = () => {
                   )}
 
                   <div className="flex flex-col items-center justify-center min-h-screen bg-[#051923] text-white p-6">
-                        <div className="bg-[#003554] shadow-lg p-8 rounded-xl w-full max-w-md text-center border border-[#00A6FB]/30">
+                        <div className="bg-[rgb(0,53,84)] shadow-lg p-8 rounded-xl w-full max-w-md text-center border border-[#00A6FB]/30">
                               {/* Profile Picture with Upload Option */}
                               <div className="relative inline-block">
                                     <img

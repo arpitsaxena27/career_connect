@@ -23,7 +23,6 @@ const JobDetail = () => {
       const [isLoadingSelected, setIsLoadingSelected] = useState(false);
       const [isApplied, setIsApplied] = useState(false);
       const [isSelected, setIsSelected] = useState(false);
-      const dispatch = useDispatch();
 
       // Load states from localStorage on component mount
       useEffect(() => {

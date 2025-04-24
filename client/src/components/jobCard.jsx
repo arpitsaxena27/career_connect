@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-const JobCard = ({ job, missed, applied,admin }) => {
+const JobCard = ({ job, missed, applied, admin }) => {
       const navigate = useNavigate();
 
       const formatDate = (dateString) => {
@@ -15,7 +15,7 @@ const JobCard = ({ job, missed, applied,admin }) => {
 
       return (
             <motion.div
-                  key={job._id}
+                  key={applied || missed ? job.id : job._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
@@ -34,18 +34,25 @@ const JobCard = ({ job, missed, applied,admin }) => {
                         {job.title}
                   </h2>
                   <p className="text-gray-300 text-lg">{job.company}</p>
-                  <p className="text-sm text-brightBlue font-medium">
-                        {job.jobType}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                        Last Date: {formatDate(job.deadline)}
-                  </p>
-                  <p className="text-sm mt-2 text-gray-200">
-                        {job.description}
-                  </p>
+                  {applied || missed ? (
+                        <></>
+                  ) : (
+                        <>
+                              {" "}
+                              <p className="text-sm text-brightBlue font-medium">
+                                    {job.jobType}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                    Last Date: {formatDate(job.deadline)}
+                              </p>
+                              <p className="text-sm mt-2 text-gray-200">
+                                    {job.description}
+                              </p>
+                        </>
+                  )}
 
                   {/* Button */}
-                  {applied === true||admin ? (
+                  {applied === true || admin ? (
                         <motion.button
                               whileHover={{
                                     scale: 1.1,
@@ -53,7 +60,15 @@ const JobCard = ({ job, missed, applied,admin }) => {
                               }}
                               transition={{ type: "spring", stiffness: 300 }}
                               className={`btn btn-primary w-full mt-3`}
-                              onClick={() => navigate(`/job/${job._id}`)}
+                              onClick={() =>
+                                    navigate(
+                                          `/job/${
+                                                applied || missed
+                                                      ? job.id
+                                                      : job._id
+                                          }`
+                                    )
+                              }
                         >
                               View Details
                         </motion.button>
@@ -71,7 +86,6 @@ const JobCard = ({ job, missed, applied,admin }) => {
                               Apply Now
                         </motion.button>
                   )}
-
             </motion.div>
       );
 };
