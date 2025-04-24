@@ -35,8 +35,9 @@ export async function fetchJobById(id) {
 export async function fetchExpiredJobs() {
   try {
     const jobs = await Job.find({
-      deadline: { $gt: new Date() },
+      deadline: { $lt: new Date() },
     });
+
     return Promise.resolve(jobs);
   } catch (error) {
     return Promise.reject(error.message);

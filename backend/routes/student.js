@@ -4,6 +4,7 @@ import {
   getJobById,
   getExpiredJobs,
   getUnappliedJobs,
+  getAppliedJobs,
 } from "../controllers/student.js";
 import { isAuthorizedAsStudent } from "../middlewares/isAuthorized.js";
 
@@ -18,6 +19,10 @@ router.get("/", (req, res) => {
 
 router.get("/missed", (req, res) => {
   return getUnappliedJobs(req, res);
+});
+
+router.get("/applied", (req, res) => {
+  return getAppliedJobs(req, res);
 });
 
 // router.get("/jobs/:id", (req, res) => {

@@ -4,6 +4,8 @@ import {
   fetchExpiredJobs,
 } from "../services/jobServices.js";
 
+import { fetchAnalyticsByJobID } from "../services/analyticsServices.js";
+
 export async function getJobs(req, res) {
   try {
     const jobs = await fetchJobs(req.user);
@@ -34,6 +36,59 @@ export async function getExpiredJobs(req, res) {
   }
 }
 
+export async function getAppliedJobs(req, res) {
+  try {
+    const appliedJobs = [];
+    const studentId = req.user._id.toString();
+
+    const jobs = await fetchExpiredJobs();
+    if (!jobs) {
+      return res.status(200).json({ appliedJobs: appliedJobs });
+    }
+
+    for (let i = 0; i < jobs.length; i++) {
+      const job = jobs[i];
+      const analytics = await fetchAnalyticsByJobID("" + job._id);
+
+      if (!analytics) {
+        appliedJobs.add({
+          id: "" + job._id,
+          title: job.title,
+          company: job.company,
+        });
+        continue;
+      } else {
+        const applied_students = analytics[0].applied_students;
+        const studentsList = [];
+
+        for (let j = 0; j < applied_students.length; j++) {
+          studentsList.push("" + applied_students[j]);
+        }
+
+        let isFound = false;
+        for (let student of studentsList) {
+          if (student === studentId) {
+            isFound = true;
+            break;
+          }
+        }
+
+        if (isFound) {
+          appliedJobs.push({
+            id: "" + job._id,
+            title: job.title,
+            company: job.company,
+          });
+        }
+      }
+    }
+
+    return res.status(200).json({ appliedJobs: appliedJobs });
+  } catch (error) {
+    return res.status(500).json({ error: error });
+  }
+}
+
 export async function getUnappliedJobs(req, res) {
   try {
     const missedJobs = [];
@@ -46,25 +101,43 @@ export async function getUnappliedJobs(req, res) {
 
     for (let i = 0; i < jobs.length; i++) {
       const job = jobs[i];
-      const analytics = await fetchAnalyticsByJobID("" + jobs._id);
+      const analytics = await fetchAnalyticsByJobID("" + job._id);
 
       if (!analytics) {
-        missedJobs.add({ id: job._id, title: job.title, company: job.company });
+        missedJobs.add({
+          id: "" + job._id,
+          title: job.title,
+          company: job.company,
+        });
         continue;
       } else {
-        if (!analytics.appliedStudents.includes(studentId)) {
-          missedJobs.add({
-            id: job._id,
+        const applied_students = analytics[0].applied_students;
+        const studentsList = [];
+
+        for (let j = 0; j < applied_students.length; j++) {
+          studentsList.push("" + applied_students[j]);
+        }
+
+        let isFound = false;
+        for (let student of studentsList) {
+          if (student === studentId) {
+            isFound = true;
+            break;
+          }
+        }
+
+        if (!isFound) {
+          missedJobs.push({
+            id: "" + job._id,
             title: job.title,
             company: job.company,
           });
-          continue;
         }
       }
     }
 
     return res.status(200).json({ missedJobs: missedJobs });
   } catch (error) {
-    return res.status(500).json({ message: error });
+    return res.status(500).json({ error: error });
   }
 }
